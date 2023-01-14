@@ -1,0 +1,215 @@
+<!--
+    Auhtor: Gotsinas Antonios
+
+    Περιγραφή:
+
+        Σελίδα που φιλοξενεί έναν υπολογιστή το νόμου του Ωμ.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Functions Project</title>
+        <script src ="ohms.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+
+    <body onload="onLoad()">
+        <a href="index.html">Αρχική</a><br>
+    <div class="box">
+        <h1>Ο νόμος του Ωμ</h1>
+        <p class="rule"><b>Η ένταση του ρεύματος που διαρρέει ένα
+            κύκλωμα είναι ανάλογη της
+            εφαρμοζόμενης τάσης και αντιστρόφως ανάλογη
+            της αντίστασης του κυκλώματος</b></p>
+            <img src="ohmslaw.bmp" alt="Νόμος του Ωμ" style ="width:25%">
+            <img src="ohmscircuit.bmp" alt="Νόμος του Ωμ" style="width:15%;">
+        
+        <h3>Υπολογιστής Νόμου του Ωμ</h3>
+        <p style="width:50%; text-align: justify;">Μπορείτε να υπολογίσετε οποιαδήποτε παράμετρο <b style="color:red">R</b>, <b style="color:red">V</b> ή <b style="color:red">I</b> άν γνωρίζεται δύο εκ των τριών παραμέτρων. 
+        Χρησιμοποιήστε το αναδυόμενο μενού επιλογών <b style="color:blue">"Υπολογισμός:"</b> για να επιλέξετε την άγνωστη μεταβλητή. Τα πεδία με <b style="color:green">πράσινο</b> χρώμα
+        είναι τα πεδία των γνωστών μεταβλητών και ενεργοποιούνται ανάλογα με την επιλογή της άγνωστης μεταβλητής.
+        </p>
+        <div id ="bord" class="container">
+
+            <div class = "row">
+                <div class="column"><p>Τιμή της αντίστασης R (Ω)</p> </div>
+                <div class="column"><p>Τιμή της τάσης V (Volt)</p></div>
+                <div class="column"><p>Τιμή του Ρεύματος I (A)</p></div>
+            </div>
+
+            <div class = "row">
+                <div class="column"><input id="resistance"></div>
+                <div class="column"><input id="voltage"></div>
+                <div class="column"> <input id ="current"></div>
+            </div>
+            
+            <div class = "row">
+                <div class="column"><label for="calcSelection">Υπολογισμός: </label></div>
+                <div class="column"></div>
+                <div class="column"></div>
+            </div>
+
+            <div class = "row">
+                <div class="column"> 
+                    <select name="Calculate" id="calcSelection" onchange="onResultChange()">
+                    <option value="R"">Αντίστασης</option>
+                    <option value="V">Τάσης</option>
+                    <option value="I">Ρεύματος</option>
+                    </select></div>
+                <div class="column"> <p id="result" class="result"></p></div>
+                <div class="column"><button id="calcButton" onclick="oncalcButtonClick()">Υπολογισμός</button></div>    
+        </div>
+    </div>  
+    <!--
+        Πρόγραμμα υπολογισμού του νόμου του Ωμ σύμφωνα με τις παραμέτρους που είναι γνωστές οι τιμές τους.
+    -->
+    <script>
+       
+       // δήλωσε μεταβλητές αναφοράς για κάθε πεδίο εισόδου
+       let inputR = document.getElementById("resistance");
+       let inputV = document.getElementById("voltage");
+       let inputI = document.getElementById("current");
+       // δήλωσε μία μεταβλητή αναφοράς για το στοιχείο αναδυόμενης λίστας επιλογής υπολογισμού
+       let calc = document.getElementById("calcSelection");
+       // δήλωσε μία μεταβλητή αναφοράς για το στοιχείο εμφάνισης αποτελέσματος 
+       let result = document.getElementById("result");
+
+        // συνάρτηση που θα εκτελείται όταν φορτώνουμε τη σελίδα
+       function onLoad() {
+        // κατά τη φόρτωση της σελίδας
+        calc.value = "R";               // επέλεξε ως αρχική επιλογή υπολογισμού την Αντίσταση
+        inputR.disabled = true;         // απενεργοποίησε το στοιχείο εισόδου τιμής αντίστασης
+        inputR.value = "";              // καθάρισε όλα τα πεδία εισόδου
+        inputV.value = "";
+        inputI.value = "";
+        // κάνε μεταβολή των χρωμάτων 
+        inputR.style.backgroundColor = "transparent";
+        inputV.style.backgroundColor = "greenyellow";
+        inputI.style.backgroundColor = "greenyellow";
+       }
+       
+        // συνάρτηση που θα εκτελείται με την αλλαγή της τιμής του στοιχείου select
+        function onResultChange() {            
+                calculationSelector(calc.value);           
+        }
+
+        // συνάρτηση που θα εκτελείται όταν πατηθεί το πλήκτρο υπολογισμού
+        function oncalcButtonClick() {
+            // ανάλογα με την επιλογή υπολογισμού
+            switch(calc.value)
+            {
+                case "R": // υπολογισμός της αντίστασης από το ρεύμα και την τάση
+
+                // προτού προχωρήσεις σε υπολογισμούς κάνε έλεγχο άν ο παρανομαστής του κλάσματος είναι διαφορετικός
+                // του 0. Στην περίπτωση αυτή είναι η τιμή του ρεύματος I αφού εκτελούμε την πράξη  R = V/I. 
+                if (checkDenominator(inputI.value))
+                {
+                    // εμφάνισε το αποτέλεσμα στο πεδίο result 
+                    result.innerHTML = Ohms_R(inputV.value,inputI.value,true);
+                    // εμφάνισε το ίδιο αποτέλεσμα και στο πεδίο εισόδου της αντίστασης χωρίς τις μονάδες μέτρησης
+                    inputR.value = Ohms_R(inputV.value,inputI.value,false);;
+                }
+                else // σε περίπτωση που ο παρανομαστής είναι 0 ή κάποια απροσδιόριστη τιμή 
+                {
+                    // πρέπει να εμφανίσουμε ένα μήνυμα 
+                    result.innerHTML = "Η τιμή του ρεύματος Ι δεν έχει σωστή μορφή";
+                }
+                    break;
+                case "V": // υπολογισμός της τάσης από αντίσταση και ρεύμα
+
+                        // εμφάνισε το αποτέλεσμα στο πεδίο result 
+                        result.innerHTML = Ohms_V(inputR.value,inputI.value,true);
+                        // εμφάνισε το ίδιο αποτέλεσμα και στο πεδίο εισόδου της αντίστασης χωρίς τις μονάδες μέτρησης
+                        inputV.value = Ohms_V(inputR.value,inputI.value,false);            
+                    break;
+                case "I": // υπολογισμός του ρεύματος από την τάση και την αντίσταση
+
+                // προτού προχωρήσεις σε υπολογισμούς κάνε έλεγχο άν ο παρανομαστής του κλάσματος είναι διαφορετικός
+                // του 0. Στην περίπτωση αυτή είναι η τιμή της αντίστασης R αφού εκτελούμε την πράξη  I = V/R. 
+                if (checkDenominator(inputR.value))
+                {
+                    // εμφάνισε το αποτέλεσμα στο πεδίο result 
+                    result.innerHTML = Ohms_I(inputR.value,inputV.value,true);
+                    // εμφάνισε το ίδιο αποτέλεσμα και στο πεδίο εισόδου της έντασης του ρεύματος χωρίς τις μονάδες μέτρησης
+                    inputI.value = Ohms_I(inputR.value,inputV.value,false);;
+                }
+                else // σε περίπτωση που ο παρανομαστής είναι 0 ή κάποια απροσδιόριστη τιμή 
+                {
+                    // πρέπει να εμφανίσουμε ένα μήνυμα 
+                    result.innerHTML = "Η τιμή της αντίστασης R δεν έχει σωστή μορφή";
+                }
+                break;
+            }
+        }
+
+        // μία συνάρτηση η οποία επιστρέφει true άν η παράμετρος value είναι αριθμός διαφορετικός του 0
+        // θα χρησιμοποιηθεί ώστε να ελέγχει άν ο παρανομαστής ενός κλάσματος δέν είναι 0 ώστε να μήν 
+        // δημιουργούνται προβλήματα κατά τις πράξεις με διαιρέσεις.
+        function checkDenominator(value) {
+            // μεταβλητή η οποία θα γίνει true μόνο άν ο παρανομαστής είναι αριθμός και είναι διαφορετικός του 0
+            let pass = false;
+
+            // κάνε μετατροπή της τιμής value σε αριθμό τύπου float
+            let f = parseFloat(value);
+            // πρώτα κάνε έλεγχο άν η τιμή δεν είναι άκυρη
+            if (!Number.isNaN(f))
+            {
+                // άν περάσεις το πρώτο check κάνε έλεγχο άν δεν είναι 0
+                if (value != 0)
+                 // θέσε πως περάσαμε τα check άρα είναι ασφαλές να χρησιμοποιήσουμε τον αριθμό
+                 pass = true;                
+            }
+            return pass;
+        }
+        // Συνάρτηση με τη μορφή διαδικασίας η οποία δέχεται μία παράμετρο value
+        // και σύμφωνα με την τιμή αυτής της παραμέτρου απενεργοποιεί το κουτί εισόδου
+        // που αντιστοιχεί στον υπολογισμό αυτής της ποσότητας. Οι επιτρεπτές τιμές είναι
+        // "R" - για υπολογισμό της αντίστασης
+        // "V" - για υπολογισμό της τάσης 
+        // "Ι" - για υπολογισμό της έντασης του ρεύματος
+        // Η συνάρτηση αυτή έχει σχεδιαστεί να λειτουργεί με την συνάρτηση εξυπηρέτησης του event onChange
+        // για το στοιχείο <select> που έχουμε τοποθετήσει στη σελίδα μας ωστε να επιλέγουμε την παράμετρο υπολογισμού
+        function calculationSelector(value) {
+            // ανάλογα με την τιμή της παραμέτρου value
+            // απενεργοποίησε το κουτί εισόδου για το οποίο ο υπολογισμός θέλουμε να γίνει
+            // και ενεργοποίησε τα κουτιά εισόδου των τιμών που θα συμμετέχουν στους υπολογισμούς ως γνωστές μεταβλητές
+            // άλλαξε επίσης και τα χρώματα των πεδίων που είναι ενεργά καθώς και του πεδίου που είναι ανενεργό
+            switch (value) 
+            {
+                case "R":
+                    inputR.disabled = true;
+                    inputV.disabled = false;
+                    inputI.disabled = false;
+                    inputR.style.backgroundColor = "transparent";
+                    inputV.style.backgroundColor = "greenyellow";
+                    inputI.style.backgroundColor = "greenyellow";
+                    break;
+                case "V":
+                    inputR.disabled = false;
+                    inputV.disabled = true;
+                    inputI.disabled = false;
+                    inputR.style.backgroundColor = "greenyellow";
+                    inputV.style.backgroundColor = "transparent";
+                    inputI.style.backgroundColor = "greenyellow";
+                    break;
+                case "I":
+                    inputR.disabled = false;
+                    inputV.disabled = false;
+                    inputI.disabled = true;
+                    inputR.style.backgroundColor = "greenyellow";
+                    inputV.style.backgroundColor = "greenyellow";
+                    inputI.style.backgroundColor = "transparent";
+                    break;
+                default:               
+                    inputR.disabled = true;
+                    inputV.disabled = false;
+                    inputI.disabled = false;
+                    inputR.style.backgroundColor = "transparent";
+                    inputV.style.backgroundColor = "greenyellow";
+                    inputI.style.backgroundColor = "greenyellow";
+                    break;
+            }
+        }
+    </script>
+    </body>
+</html>
