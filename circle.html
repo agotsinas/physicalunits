@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="circle.js"></script>
+    <script src="mylibrary.js"></script>
+    <title>Document</title>
+</head>
+<body>
+
+    
+  
+    <a href="index.html">Αρχική</a><br>
+    <div class="box">
+        <h1>Υπολογισμός εμβαδού επιφάνειας κύκλου</h1>
+        <p class="rule"><b>Θεωρία του κύκλου.....</b></p>
+            <img src="circler.png" alt="κύκλος" style ="width:25%">           
+        
+        <h3>Υπολογιστής εμβαδού επιφάνειας κύκλου</h3>
+        <p style="width:50%; text-align: justify;"> Οδηγίες σχετικά με την εφαρμογή υπολογισμού</p>
+        
+        <div id="test"></div>
+        <div id ="bord" class="container">
+
+            <div class="row">
+                <div class="column">
+                    <p id="circleArea"></p>
+                </div>
+                <div class="column">
+                    <input type="text" name="" id="circleR" onclick="circleROnKeyPress()" >
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <button id="clearButton" onclick="clearAll()">Καθαρισμός Όλων</button>
+                </div>
+                <div class="column">
+                    <button id="calculateButton" onclick="calculateArea()">Υπολογισμός</button>
+                </div>
+            </div>
+
+           
+            
+        </div>
+
+           <p id="test"></p>
+    </div>  
+    <!--
+        Πρόγραμμα υπολογισμού circle area
+    -->
+    
+    
+    <script>
+        let radius = document.getElementById("circleR");
+       
+
+
+       
+        
+     
+        function calculateArea() {
+            
+            if (ValidateNumber(radius.value) == true)
+            {
+                document.getElementById('circleArea').innerHTML = Circle_Area(radius.value);
+            }
+            else
+            {
+                document.getElementById('circleArea').innerHTML = "Σφάλμα, η τιμή της ακτίνας δεν έχει τη σωστή μορφή";
+                document.getElementById('circleR').style.backgroundColor  = 'red';
+            }
+            
+        }
+
+        function clearAll() {
+            document.getElementById('circleArea').innerHTML = 0;
+            radius.value = 0;
+        }
+
+        
+
+            
+    </script>
+</body>
+</html>
